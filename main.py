@@ -100,12 +100,12 @@ def build_image_index(folder_path):
 def compare_image_to_folder(input_image_path, folder_records):
     sha256 = compute_sha256(input_image_path)
 
-    # 1️⃣ Exact duplicate
+    # 1. Exact duplicate
     for r in folder_records:
         if r["sha256"] == sha256:
             return True, r["image_id"], "exact_duplicate"
 
-    # 2️⃣ Hash + metadata filtering
+    # 2. Hash + metadata filtering
     phash = compute_phash(input_image_path)
     prefix = phash_prefix(phash)
     aspect_ratio = image_metadata(input_image_path)
@@ -116,7 +116,7 @@ def compare_image_to_folder(input_image_path, folder_records):
         and abs(r["aspect_ratio"] - aspect_ratio) <= 0.1
     ]
 
-    # 3️⃣ ORB verification
+    # 3️. ORB verification
     for r in candidates:
         if orb_verify(input_image_path, r["image_path"]):
             return True, r["image_id"], "augmented_duplicate"
@@ -131,15 +131,15 @@ if __name__ == "__main__":
     folder_path = input("Enter path to images folder: ").strip()
     input_image = input("Enter path to input image: ").strip()
 
-    print("🔍 Indexing images...")
+    print("Indexing images...")
     folder_records = build_image_index(folder_path)
 
-    print("🧠 Comparing image...")
+    print("Comparing image...")
     is_dup, image_id, reason = compare_image_to_folder(
         input_image, folder_records
     )
 
     if is_dup:
-        print(f"🚫 Duplicate found ({reason}) → {image_id}")
+        print(f"Duplicate found ({reason}) → {image_id}")
     else:
-        print("✅ New image")
+        print("New image")
